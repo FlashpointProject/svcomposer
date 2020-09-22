@@ -1,0 +1,11 @@
+{
+    "repositories": [
+        {
+            "url": "https://github.com/silexlabs/amfphp-2.0.git",
+            "type": "git"
+        }
+    ],
+    "require": {
+        "silexlabs/amfphp": "dev-master#v2.2.2"
+    }
+}

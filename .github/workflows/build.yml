@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4'
+        tools: composer
+    - name: Prepare
+      id: prepare
+      run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"    
+    - name: Install dependencies
+      run: composer install --prefer-dist
+    - name: Create tarball
+      run: tar -cvf vendor.tar vendor
+    - uses: actions/upload-artifact@v2
+      with:
+        name: vendor
+        path: vendor.tar
+    - name: Create release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.prepare.outputs.sha_short }}
+        release_name: ${{ steps.prepare.outputs.sha_short }}
+        draft: false
+        prerelease: false
+    - name: Upload release
+      id: upload_release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./vendor.tar
+        asset_name: vendor.tar
+        asset_content_type: application/x-tar
