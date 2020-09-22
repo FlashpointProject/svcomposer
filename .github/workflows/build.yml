@@ -19,7 +19,7 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist
     - name: Create tarball
-      run: tar -cvf vendor.tar vendor
+      run: tar --exclude-vcs -cvf vendor.tar vendor
     - uses: actions/upload-artifact@v2
       with:
         name: vendor
